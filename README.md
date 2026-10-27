@@ -59,10 +59,29 @@ diubah lewat filter `akar_proxy_seo_api_key`.
 
 ```bash
 curl -X POST "https://situs-anda.com/wp-json/akar-proxy-seo/v1/posts" \
-  -H "X-API-Key: $AKAR_WP_API_KEY" \
+  -H "X-API-Key: <API_KEY>" \
   -H "Content-Type: application/json" \
   -d '{"title":"Judul","content":"<p>Isi</p>","status":"draft","tags":["otomasi"]}'
 ```
+
+### n8n: key disimpan di dalam workflow
+
+Workflow contoh menyimpan base URL dan API key pada blok `DEFAULT_SITES` di
+bagian paling atas node **Run Config** — bukan di environment variable
+container:
+
+```js
+const DEFAULT_SITES = {
+  akdisi: { base_url: 'https://situs-anda.com', api_key: '<API key>' }
+};
+const DEFAULT_SITE_ID = 'akdisi';
+```
+
+Rotasi key cukup mengubah satu nilai itu lalu menyimpan workflow; container
+tidak perlu dibuat ulang. `AKAR_SITES` (env) masih boleh dipakai untuk
+menambah `base_url`, tetapi `api_key` di dalamnya diabaikan, dan
+`AKAR_WP_API_KEY` tidak dibaca lagi — keduanya memunculkan peringatan di
+output `Run Config` supaya konfigurasi lama tidak diam-diam menang.
 
 ## Keamanan
 

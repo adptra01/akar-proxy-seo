@@ -45,17 +45,27 @@ Plugin ini menyediakan **dua jalur akses** ke endpoint yang sama:
 3. Key disimpan di tabel options; saat aktivasi pertama diambil dari konstanta `AKAR_PROXY_SEO_KEY` (legacy) bila ada.
 
 **Untuk n8n:**
-Semua pengaturan dibaca dari Environment Variable n8n, jadi satu workflow bisa dipakai untuk banyak situs tanpa diedit:
+Base URL dan API key situs diatur **di dalam workflow**, bukan di environment variable. Keduanya ada pada blok `DEFAULT_SITES` di bagian paling atas node **Run Config**:
+
+    const DEFAULT_SITES = {
+      akdisi: { base_url: 'https://situs-anda.com', api_key: '<API key>' }
+    };
+    const DEFAULT_SITE_ID = 'akdisi';
+
+Mengganti API key = mengubah satu nilai itu lalu menyimpan workflow; container n8n tidak perlu dibuat ulang. Menambah situs = menyalin satu baris, mengganti id, `base_url`, dan `api_key`, lalu memilihnya lewat `AKAR_SITE_ID` (atau `DEFAULT_SITE_ID`).
+
+Environment variable hanya untuk pengaturan non-rahasia:
 
 | Variabel | Isi |
 |---|---|
-| `AKAR_SITES` | JSON registry: `{"situs-anda":{"base_url":"https://situs-anda.com","api_key":"..."}}` |
-| `AKAR_SITE_ID` | Situs yang dipakai run ini (default entri pertama di `AKAR_SITES`) |
+| `AKAR_SITES` | Opsional, hanya `base_url`: `{"situs-anda":{"base_url":"https://situs-anda.com"}}`. `api_key` di dalamnya **diabaikan** (workflow memberi peringatan). |
+| `AKAR_SITE_ID` | Situs yang dipakai run ini (default `DEFAULT_SITE_ID` di node `Run Config`) |
 | `AKAR_WP_BASE_URL` | Override base URL situs terpilih (tanpa `/wp-json/...`) |
-| `AKAR_WP_API_KEY` | Override API key situs terpilih |
 | `AKAR_MODE` | `safe` (default) atau `production` |
 | `AKAR_CONFIRM` | `true` = izinkan publish (default `false`) |
 | `AKAR_DRY_RUN` | `true` = tidak ada request tulis sama sekali (default `true`) |
+
+`AKAR_WP_API_KEY` tidak dibaca lagi. Bila variabel itu masih ada di container, nilainya diabaikan dan workflow menampilkan peringatan supaya tidak menyesatkan.
 
 Default aman: run pertama hanya pratinjau. Urutan menaikkan: `AKAR_DRY_RUN=false` → artikel masuk sebagai **draft**; publish hanya bila `AKAR_MODE=production` **dan** `AKAR_CONFIRM=true`.
 Kirim key lewat header `X-API-Key` (bukan query string) supaya tidak muncul di log URL.
@@ -66,6 +76,7 @@ Kirim key lewat header `X-API-Key` (bukan query string) supaya tidak muncul di l
 * **FIX kritis** — route `GET/POST /seo/{id}` tidak lagi menghasilkan HTTP 500. Penyebabnya `validate_callback => 'is_numeric'`, padahal WordPress memanggil callback itu dengan tiga argumen (`$value, $request, $param`) sehingga PHP 8 melempar `ArgumentCountError`. Diganti `akar_pse_validate_post_id()` yang menerima ketiga argumen dan menolak id <= 0.
 * **Auto-update** — plugin memeriksa manifest `https://adptra01.github.io/akar-proxy-seo/akar-proxy-seo.json` (cache 1 jam, backoff 15 menit saat gagal) dan menampilkan notifikasi update seperti plugin WordPress.org. Manifest dan zip rilis dipublikasikan dari repo GitHub `adptra01/akar-proxy-seo`, jadi tidak bergantung pada hosting situs mana pun. Background auto-update aktif khusus untuk plugin ini; matikan lewat `define('AKAR_PROXY_SEO_DISABLE_AUTO_UPDATE', true);` atau filter `akar_proxy_seo_auto_update`.
 * **Admin page** — baris "Pembaruan otomatis" menampilkan versi manifest, hasil percobaan terakhir, dan tautan ke Dashboard → Updates.
+* **Dokumentasi n8n** — base URL dan API key diatur di node `Run Config` (`DEFAULT_SITES`), bukan environment variable; `AKAR_WP_API_KEY` tidak dibaca lagi dan `api_key` di `AKAR_SITES` diabaikan (dengan peringatan).
 * Tidak ada perubahan kontrak endpoint; API key dan URL tetap sama.
 
 = 1.4.0 =
