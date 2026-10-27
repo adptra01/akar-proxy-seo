@@ -1,0 +1,65 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.4 = batas bawah yang didukung plugin, 8.4 = versi terbaru.
+        php: ['7.4', '8.2', '8.4']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Lint
+        run: |
+          php -l akar-proxy-seo/akar-proxy-seo.php
+          php -l akar-proxy-seo/includes/handlers.php
+          php -l akar-proxy-seo/includes/legacy-proxy.php
+
+      - name: Uji unit
+        run: php tests/unit_cases.php
+
+      - name: Uji REST
+        run: php tests/rest_cases.php
+
+      - name: Uji proxy legacy
+        run: php tests/legacy_cases.php
+
+  rilis:
+    name: Zip rilis valid
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Bangun zip + manifest
+        run: ./release-plugin.sh
+
+      - name: Uji dari zip hasil rilis
+        run: |
+          rm -rf /tmp/rel && mkdir -p /tmp/rel
+          unzip -q akar-proxy-seo.zip -d /tmp/rel
+          export AKAR_PLUGIN_DIR=/tmp/rel/akar-proxy-seo
+          php tests/unit_cases.php
+          php tests/rest_cases.php

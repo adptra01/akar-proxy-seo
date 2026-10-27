@@ -1,0 +1,16 @@
+# Artefak build lokal — yang dipublikasikan hanya salinan di docs/
+/akar-proxy-seo.zip
+/akar-proxy-seo.json
+
+# Bukan bagian plugin: backup, workflow n8n (berisi prompt/site config), skrip lokal
+/backup/
+/Akdisi*.json
+
+# Sampah editor / OS
+*.swp
+*.bak
+*.orig
+.DS_Store
+
+# Hasil uji legacy (dibuat & dihapus oleh tests/legacy_cases.php)
+/tests/site/wp-api-proxy.php
