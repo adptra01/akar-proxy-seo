@@ -87,7 +87,7 @@ def main():
     ap.add_argument("--plugin-dir", required=True, help="folder sumber akar-proxy-seo/")
     ap.add_argument("--zip", required=True, help="zip rilis yang baru dibangun")
     ap.add_argument("--out", required=True, help="tujuan manifest JSON")
-    ap.add_argument("--homepage", default="https://adptra01.github.io/akar-proxy-seo/")
+    ap.add_argument("--homepage", default="https://github.com/adptra01/akar-proxy-seo")
     ap.add_argument("--download-url", default="https://adptra01.github.io/akar-proxy-seo/akar-proxy-seo.zip")
     ap.add_argument("--tested", default="7.1")
     ap.add_argument("--date", default="")

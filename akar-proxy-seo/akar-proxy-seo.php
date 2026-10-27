@@ -18,7 +18,7 @@ define('AKAR_PROXY_SEO_VERSION', '1.5.0');
 define('AKAR_PROXY_SEO_FILE', __FILE__);
 define('AKAR_PROXY_SEO_SLUG', 'akar-proxy-seo');
 define('AKAR_PROXY_SEO_MANIFEST_URL', 'https://adptra01.github.io/akar-proxy-seo/akar-proxy-seo.json');
-define('AKAR_PROXY_SEO_HOMEPAGE', 'https://adptra01.github.io/akar-proxy-seo/');
+define('AKAR_PROXY_SEO_HOMEPAGE', 'https://github.com/adptra01/akar-proxy-seo');
 define('AKAR_PROXY_SEO_OPTKEY', 'akar_proxy_seo_api_key');
 define('AKAR_PROXY_SEO_PROXYFILE', 'wp-api-proxy.php');
 define('AKAR_PROXY_SEO_FILEOPT', 'akar_proxy_seo_proxy_file');

@@ -361,7 +361,7 @@ $manifest_url = add_query_arg('cb', (string) (int) floor(time() / HOUR_IN_SECOND
 // 0. URL distribusi adalah kontrak: situs yang sudah terpasang memakai konstanta
 //    ini, jadi mengubahnya memutus auto-update tanpa error apa pun.
 t_same(AKAR_PROXY_SEO_MANIFEST_URL, 'https://adptra01.github.io/akar-proxy-seo/akar-proxy-seo.json', 'manifest menunjuk GitHub Pages');
-t_same(AKAR_PROXY_SEO_HOMEPAGE, 'https://adptra01.github.io/akar-proxy-seo/', 'homepage menunjuk halaman repo');
+t_same(AKAR_PROXY_SEO_HOMEPAGE, 'https://github.com/adptra01/akar-proxy-seo', 'homepage menunjuk repo');
 
 // 1. Jaringan mati: tidak boleh melempar error, tidak boleh mengaku berhasil.
 $got = akar_pse_fetch_manifest(true);
