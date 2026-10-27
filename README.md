@@ -92,6 +92,34 @@ define('AKAR_PROXY_SEO_DISABLE_AUTO_UPDATE', true);
 add_filter('akar_proxy_seo_auto_update', '__return_false');
 ```
 
+## Hosting dengan challenge JavaScript
+
+Sebagian hosting gratis (salah satunya InfinityFree) menyisipkan challenge
+JavaScript pada **semua** request, termasuk `/wp-json/...`. Halaman challenge
+dilayani oleh lapisan hosting **sebelum** PHP dan WordPress dijalankan, jadi
+tidak ada pengaturan plugin yang bisa mematikannya.
+
+Gejalanya mudah dikenali: endpoint membalas `200` bertipe `text/html` berisi
+`<script src="/aes.js">`, bukan JSON, walaupun API key sudah benar. Klien
+non-browser (curl, n8n, skrip) tidak menjalankan JavaScript, sehingga cookie
+challenge tidak pernah terbentuk dan request selalu berhenti di halaman itu.
+
+Pilihannya:
+
+- **pindahkan situs ke hosting tanpa challenge** — satu-satunya solusi tahan
+  lama, karena API bisa dipanggil langsung;
+- minta penyedia mengecualikan `/wp-json/` dari challenge (jarang tersedia di
+  paket gratis);
+- pakai klien yang lebih dulu menyelesaikan challenge, lalu mengirim cookie
+  `__test` pada request berikutnya. Perlu diketahui: cookie dihitung **per
+  challenge**, jadi nilai dari request sebelumnya selalu ditolak (bahkan
+  beberapa detik kemudian), dan algoritmanya dapat berubah sewaktu-waktu.
+  Pendekatan ini tambalan yang perlu dirawat, bukan solusi.
+
+Plugin tidak melakukan bypass apa pun: tidak ada kode yang menghitung atau
+menyimpan cookie challenge, dan API tetap mensyaratkan key pada semua endpoint
+kecuali `/ping`.
+
 ## Proxy legacy (opsional)
 
 Saat aktivasi, plugin mencoba menulis `wp-api-proxy.php` ke root WordPress. Bila
